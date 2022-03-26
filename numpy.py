@@ -3,7 +3,7 @@
 '''
 import numpy as np
 
-def var_to_numpy(obj):
+def value_to_numpy(obj):
     shape = tuple(len(s) for s in obj.index_set().subsets())
     val = np.empty(shape)
     for i in obj:
@@ -17,14 +17,15 @@ def suffix_to_numpy(suf,con):
         val[i] = suf[con[i]]
     return val
 
-def fill_var_value(var,val):
-    for i in var:
+def fill_value(obj,val,meet_bound=True):
+    for i in obj:
         val_i=val[i]
-        if var[i].has_lb():
-            val_i=max(val_i,var[i].lb)
-        if var[i].has_ub():
-            val_i=min(val_i,var[i].ub)
-        var[i].set_value(val_i)
+        if meet_bound:
+            if hasattr(obj[i],'has_lb') and obj[i].has_lb():
+                val_i=max(val_i,obj[i].lb)
+            if hasattr(obj[i],'has_ub') and obj[i].has_ub():
+                val_i=min(val_i,obj[i].ub)
+        obj[i].set_value(val_i)
 
 def wrap_as_rule(*data: list, offset: int = 0):
     '''
